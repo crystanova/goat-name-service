@@ -1,60 +1,81 @@
-This project is a Hardhat 3 project using the native Node.js test runner (`node:test`) and the `viem` library for Ethereum interactions.
+# Agent Instructions
 
-To learn more about the Hardhat 3, please visit the [Getting Started guide](https://hardhat.org/docs/getting-started#getting-started-with-hardhat-3).
+This repository is a Hardhat 3 project. It uses the native Node.js test runner
+(`node:test`) and `viem` for Ethereum interactions.
 
 ## Project Overview
 
-- A Hardhat configuration file.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
+- Hardhat configuration lives in `hardhat.config.ts`.
+- Solidity contracts live under `contracts/`.
+- TypeScript integration tests use `node:test` and `viem`.
+- Keep changes scoped to the requested behavior and follow existing project
+  patterns before adding new abstractions.
 
-## Usage
+## Commands
 
-To compile all the contracts in the project, execute the following command:
-
-```shell
-npm run compile
-```
-
-To run all the tests in the project, execute the following command:
+Run tests with:
 
 ```shell
 npm test
 ```
 
-Don't run compile and test separately! The `test` command automatically compiles the contracts before running the tests.
+Do not run `npm run compile` separately before `npm test`; the test command
+already compiles the contracts.
 
-To format all the Solidity files in the project, execute the following command:
+Compile-only command, when explicitly needed:
+
+```shell
+npm run compile
+```
+
+Format Solidity before committing:
 
 ```shell
 npm run fmt
 ```
 
-Always run `npm run fmt` before committing to ensure consistent code formatting across the project.
+Always run `npm run fmt` before committing Solidity changes.
 
 ## Solidity Commenting Guidelines
 
-**Goal**: Improve readability, auditability, and maintainability. Comments must explain **why, assumptions, constraints, and security**, not restate code.
+Comments should improve readability, auditability, and maintainability. Explain
+why the code exists, which assumptions it depends on, and which security
+constraints matter. Do not restate what the code already says.
 
-Core Rules (MUST)
+### Required Rules
 
-- **Keep comments accurate**: update with code changes
-- **Explain “why”, not “what”**
-- **NatSpec required for all public surfaces** (contracts, interfaces, libraries, public/external functions, events, errors, modifiers)
-- **Document security assumptions explicitly**: access control, external calls, accounting/rounding, upgradeability, `unchecked`, `assembly`
-- **No commented-out code** (use Git history)
-- **TODOs must be actionable** (include issue/PR if possible)
+- Keep comments accurate when code changes.
+- Explain "why", not "what".
+- Add NatSpec for every public surface:
+  - contracts
+  - interfaces
+  - libraries
+  - public and external functions
+  - events
+  - errors
+  - modifiers
+- Document security assumptions explicitly, including:
+  - access control
+  - external calls
+  - accounting and rounding
+  - upgradeability
+  - `unchecked`
+  - `assembly`
+- Do not leave commented-out code. Use Git history instead.
+- TODOs must be actionable and should include an issue or PR reference when
+  possible.
 
-Minimal Template
+### NatSpec Template
 
 ```solidity
 /// @title <Name>
-/// @notice <User summary>
-/// @dev <Constraints + security>
-/// @custom:security <...>
-/// @custom:assumption <...>
-/// @custom:invariant <...>
+/// @notice <User-facing summary>
+/// @dev <Constraints and security notes>
+/// @custom:security <Security assumptions>
+/// @custom:assumption <Operational assumptions>
+/// @custom:invariant <Invariant that must hold>
 contract X {
-    /// @notice <Verb...>
+    /// @notice <Verb phrase describing user-visible behavior>
     /// @dev Access: ... External calls: ... Rounding: ...
     /// @param p ...
     /// @return r ...
