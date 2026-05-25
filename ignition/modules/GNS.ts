@@ -16,6 +16,7 @@ export default buildModule("GNSModule", (m) => {
     "metadataUri",
     "https://gns-meta.goat.network/name/0x{id}",
   );
+  const baseTokenURI = m.getParameter("baseTokenURI", "");
   const minCommitmentAge = m.getParameter("minCommitmentAge", 60n);
   const maxCommitmentAge = m.getParameter("maxCommitmentAge", 86_400n);
 
@@ -25,6 +26,11 @@ export default buildModule("GNSModule", (m) => {
     [ensRegistry, GOAT_NODE],
     { from: deployer },
   );
+  m.call(baseRegistrar, "setBaseTokenURI", [baseTokenURI], {
+    id: "setBaseTokenURI",
+    from: deployer,
+    after: [baseRegistrar],
+  });
   const reverseRegistrar = m.contract("ReverseRegistrar", [ensRegistry], {
     from: deployer,
   });

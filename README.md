@@ -52,8 +52,9 @@ The Ignition module deploys and initializes the full `.goat` stack in one flow:
 1. Deploy `ENSRegistry`, `.goat` `BaseRegistrarImplementation`, `ReverseRegistrar`, `StaticMetadataService`, `GoatNameWrapper`, `GNSPriceBook`, `GNSRegistrarController`, `GNSX402Adaptor`, and `PublicResolver`
 2. Initialize `reverse` and `addr.reverse`
 3. Install `.goat` resolver records and interface records for the controller and wrapper
-4. Transfer `.goat` ownership to the base registrar
-5. Authorize the controller on the registrar, wrapper, and reverse registrar
+4. Configure the base registrar ERC721 metadata base URI
+5. Transfer `.goat` ownership to the base registrar
+6. Authorize the controller on the registrar, wrapper, and reverse registrar
 
 Before deploying to GOAT Testnet3 or GOAT Mainnet, configure the Hardhat keystore entries used by `hardhat.config.ts`:
 
@@ -82,6 +83,7 @@ The default module exposes these parameters:
 
 - `treasury`: recipient of registration and renewal ERC20 payments. Defaults to the deployer account.
 - `metadataUri`: wrapper metadata URI template. Defaults to `https://gns-meta.goat.network/name/0x{id}`.
+- `baseTokenURI`: registrar ERC721 metadata base URI passed to `BaseRegistrarImplementation.setBaseTokenURI`. Defaults to an empty string.
 - `minCommitmentAge`: minimum commit/reveal wait in seconds. Defaults to `60`.
 - `maxCommitmentAge`: maximum commitment lifetime in seconds. Defaults to `86400`.
 - `x402AuthorizedCaller`: initial authorized settlement callback caller for `GNSX402Adaptor`. Defaults to the deployer account.
@@ -95,6 +97,7 @@ For default parameterized deployments, create a JSON or JSON5 file such as `igni
   "GNSModule": {
     "treasury": "0x2222222222222222222222222222222222222222",
     "metadataUri": "https://gns-meta.goat.network/name/0x{id}",
+    "baseTokenURI": "https://gns-meta.goat.network/registrar/",
     "minCommitmentAge": 60,
     "maxCommitmentAge": 86400,
     "x402AuthorizedCaller": "0x3333333333333333333333333333333333333333"
@@ -115,6 +118,7 @@ If the final administrator is a different cold wallet or multisig, deploy `GNSWi
   "GNSModule": {
     "treasury": "0x2222222222222222222222222222222222222222",
     "metadataUri": "https://gns-meta.goat.network/name/0x{id}",
+    "baseTokenURI": "https://gns-meta.goat.network/registrar/",
     "minCommitmentAge": 60,
     "maxCommitmentAge": 86400,
     "x402AuthorizedCaller": "0x3333333333333333333333333333333333333333"

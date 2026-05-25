@@ -428,6 +428,7 @@ describe(".goat GNS", async function () {
       defaultFutureIds.some((id) => id.startsWith("GNSModule#transfer")),
       false,
     );
+    assert.equal(defaultFutureIds.includes("GNSModule#setBaseTokenURI"), true);
 
     const controllerInterfaceId =
       await fixture.gnsRegistrarController.read.interfaceId();
@@ -446,6 +447,24 @@ describe(".goat GNS", async function () {
         wrapperInterfaceId,
       ]),
       fixture.goatNameWrapper.address,
+    );
+  });
+
+  it("configures ERC721 token metadata URI from the deployment parameter", async function () {
+    const baseTokenURI = "https://metadata.goat.network/registrar/";
+
+    const deployment = await ignition.deploy(GNSModule, {
+      deploymentId: "gns-base-token-uri",
+      parameters: {
+        GNSModule: {
+          baseTokenURI,
+        },
+      },
+    });
+
+    assert.equal(
+      await deployment.baseRegistrar.read.baseTokenURI(),
+      baseTokenURI,
     );
   });
 

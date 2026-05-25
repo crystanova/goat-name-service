@@ -5,7 +5,7 @@ import { ArgumentType } from "hardhat/types/arguments";
 import type { HardhatRuntimeEnvironment } from "hardhat/types/hre";
 import { getAddress, getContract, type Address } from "viem";
 
-const GNS_X402_ADAPTOR_DEPLOYMENT_KEY = "GNSX402AdaptorModule#GNSX402Adaptor";
+const GNS_X402_ADAPTOR_DEPLOYMENT_KEY = "GNSModule#GNSX402Adaptor";
 
 const gnsX402AdaptorAbi = [
   {
