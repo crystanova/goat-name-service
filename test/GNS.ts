@@ -449,6 +449,40 @@ describe(".goat GNS", async function () {
     );
   });
 
+  it("allows the owner to configure ERC721 token metadata URI", async function () {
+    const fixture = await networkHelpers.loadFixture(deployFixture);
+
+    const label = normalize("metadata");
+    const tokenId = toTokenId(label);
+    const baseTokenURI = "https://metadata.goat.network/registrar/";
+
+    await fixture.baseRegistrar.write.addController([
+      fixture.owner.account.address,
+    ]);
+    await fixture.baseRegistrar.write.register([
+      tokenId,
+      fixture.user.account.address,
+      YEAR,
+    ]);
+
+    assert.equal(await fixture.baseRegistrar.read.baseTokenURI(), "");
+    assert.equal(await fixture.baseRegistrar.read.tokenURI([tokenId]), "");
+
+    await fixture.baseRegistrar.write.setBaseTokenURI([baseTokenURI]);
+
+    assert.equal(await fixture.baseRegistrar.read.baseTokenURI(), baseTokenURI);
+    assert.equal(
+      await fixture.baseRegistrar.read.tokenURI([tokenId]),
+      `${baseTokenURI}${tokenId}`,
+    );
+    await assert.rejects(
+      fixture.userBaseRegistrar.write.setBaseTokenURI([
+        "https://metadata.goat.network/unauthorized/",
+      ]),
+      /Ownable: caller is not the owner/,
+    );
+  });
+
   it("transfers final administrative ownership to the configured owner", async function () {
     const [deployer, , configuredOwner] = await hhViem.getWalletClients();
 
@@ -1217,7 +1251,7 @@ describe(".goat GNS", async function () {
     );
 
     await hhViem.assertions.revertWithCustomError(
-      fixture.ownerX402Adaptor.write.x402SpentEip3009([
+      fixture.ownerX402Adaptor.read.x402SpentEip3009([
         fixture.paymentToken.address,
         fixture.user.account.address,
         fixture.user.account.address,
