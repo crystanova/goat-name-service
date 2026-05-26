@@ -158,6 +158,11 @@ describe(".goat GNS", async function () {
       deployment.goatNameWrapper.address,
       { client: { wallet: user } },
     );
+    const userStaticMetadataService = await hhViem.getContractAt(
+      "StaticMetadataService",
+      deployment.staticMetadataService.address,
+      { client: { wallet: user } },
+    );
     const userPublicResolver = await hhViem.getContractAt(
       "PublicResolver",
       deployment.publicResolver.address,
@@ -187,6 +192,7 @@ describe(".goat GNS", async function () {
       otherController,
       userBaseRegistrar,
       userGoatNameWrapper,
+      userStaticMetadataService,
       userPublicResolver,
       userPaymentToken,
       annualPrice3,
@@ -417,6 +423,10 @@ describe(".goat GNS", async function () {
       fixture.owner.account.address,
     );
     assertAddress(
+      await fixture.staticMetadataService.read.owner(),
+      fixture.owner.account.address,
+    );
+    assertAddress(
       await fixture.gnsPriceBook.read.owner(),
       fixture.owner.account.address,
     );
@@ -465,6 +475,34 @@ describe(".goat GNS", async function () {
     assert.equal(
       await deployment.baseRegistrar.read.baseTokenURI(),
       baseTokenURI,
+    );
+  });
+
+  it("allows the owner to configure wrapped token metadata URI", async function () {
+    const fixture = await networkHelpers.loadFixture(deployFixture);
+    const tokenId = 1n;
+    const metadataUri = "https://metadata.goat.network/name/{id}";
+
+    assert.equal(
+      await fixture.staticMetadataService.read.uri([tokenId]),
+      "https://gns-meta.goat.network/name/0x{id}",
+    );
+
+    await fixture.staticMetadataService.write.setURI([metadataUri]);
+
+    assert.equal(
+      await fixture.staticMetadataService.read.uri([tokenId]),
+      metadataUri,
+    );
+    assert.equal(
+      await fixture.goatNameWrapper.read.uri([tokenId]),
+      metadataUri,
+    );
+    await assert.rejects(
+      fixture.userStaticMetadataService.write.setURI([
+        "https://metadata.goat.network/unauthorized/{id}",
+      ]),
+      /Ownable: caller is not the owner/,
     );
   });
 
@@ -540,6 +578,10 @@ describe(".goat GNS", async function () {
     );
     assertAddress(
       await deployment.goatNameWrapper.read.owner(),
+      configuredOwner.account.address,
+    );
+    assertAddress(
+      await deployment.staticMetadataService.read.owner(),
       configuredOwner.account.address,
     );
     assertAddress(

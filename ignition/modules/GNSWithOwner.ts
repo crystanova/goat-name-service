@@ -43,6 +43,12 @@ export default buildModule("GNSWithOwnerModule", (m) => {
     after: [GNSModule],
   });
 
+  m.call(deployment.staticMetadataService, "transferOwnership", [owner], {
+    id: "transferStaticMetadataServiceOwnership",
+    from: deployer,
+    after: [GNSModule],
+  });
+
   m.call(deployment.gnsPriceBook, "transferOwnership", [owner], {
     id: "transferGNSPriceBookOwnership",
     from: deployer,
