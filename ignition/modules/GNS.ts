@@ -14,7 +14,7 @@ export default buildModule("GNSModule", (m) => {
   const treasury = m.getParameter("treasury", deployer);
   const metadataUri = m.getParameter(
     "metadataUri",
-    "https://gns-meta.goat.network/name/0x{id}",
+    "https://gns-meta.goat.network/wrapper/",
   );
   const baseTokenURI = m.getParameter("baseTokenURI", "");
   const minCommitmentAge = m.getParameter("minCommitmentAge", 60n);

@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import {IMetadataService} from "@ensdomains/ens-contracts/contracts/wrapper/IMetadataService.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @title StaticMetadataService
 /// @notice Stores the metadata URI template used for every wrapped token.
@@ -11,6 +12,8 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 /// @custom:assumption The off-chain metadata endpoint understands the configured URI template.
 /// @custom:invariant All token ids resolve to the same configured URI template.
 contract StaticMetadataService is IMetadataService, Ownable {
+    using Strings for uint256;
+
     /// @notice Emitted when the wrapped-token metadata URI template changes.
     /// @param metadataUri The new URI template returned for every token id.
     event MetadataURISet(string metadataUri);
@@ -34,14 +37,14 @@ contract StaticMetadataService is IMetadataService, Ownable {
     }
 
     /// @notice Returns the configured metadata URI template for a wrapped token.
-    /// @dev The token id is ignored because this service intentionally returns a single static template for all wrapped tokens.
     /// @param tokenId The wrapped token id being resolved.
     /// @return metadataUri The configured URI template.
     function uri(
         uint256 tokenId
     ) external view override returns (string memory metadataUri) {
-        tokenId;
-
-        return _uri;
+        return
+            bytes(_uri).length > 0
+                ? string(abi.encodePacked(_uri, tokenId.toString()))
+                : "";
     }
 }

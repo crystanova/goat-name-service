@@ -82,7 +82,7 @@ Use `GNS.ts` when the final administrator is the deployer. This is also the corr
 The default module exposes these parameters:
 
 - `treasury`: recipient of registration and renewal ERC20 payments. Defaults to the deployer account.
-- `metadataUri`: wrapper metadata URI template. Defaults to `https://gns-meta.goat.network/name/0x{id}`.
+- `metadataUri`: wrapper metadata URI template. Defaults to `https://gns-meta.goat.network/wrapper/`.
 - `baseTokenURI`: registrar ERC721 metadata base URI passed to `BaseRegistrarImplementation.setBaseTokenURI`. Defaults to an empty string.
 - `minCommitmentAge`: minimum commit/reveal wait in seconds. Defaults to `60`.
 - `maxCommitmentAge`: maximum commitment lifetime in seconds. Defaults to `86400`.
@@ -96,7 +96,7 @@ For default parameterized deployments, create a JSON or JSON5 file such as `igni
 {
   "GNSModule": {
     "treasury": "0x2222222222222222222222222222222222222222",
-    "metadataUri": "https://gns-meta.goat.network/name/0x{id}",
+    "metadataUri": "https://gns-meta.goat.network/wrapper/",
     "baseTokenURI": "https://gns-meta.goat.network/registrar/",
     "minCommitmentAge": 60,
     "maxCommitmentAge": 86400,
@@ -110,14 +110,14 @@ Then deploy with:
 ```sh
 npx hardhat ignition deploy ignition/modules/GNS.ts --network testnet3 --parameters ignition/GNSModule.config.json
 ```
-
+ 
 If the final administrator is a different cold wallet or multisig, deploy `GNSWithOwner.ts` instead:
 
 ```json
 {
   "GNSModule": {
     "treasury": "0x2222222222222222222222222222222222222222",
-    "metadataUri": "https://gns-meta.goat.network/name/0x{id}",
+    "metadataUri": "https://gns-meta.goat.network/wrapper/",
     "baseTokenURI": "https://gns-meta.goat.network/registrar/",
     "minCommitmentAge": 60,
     "maxCommitmentAge": 86400,

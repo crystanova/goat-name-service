@@ -481,22 +481,22 @@ describe(".goat GNS", async function () {
   it("allows the owner to configure wrapped token metadata URI", async function () {
     const fixture = await networkHelpers.loadFixture(deployFixture);
     const tokenId = 1n;
-    const metadataUri = "https://metadata.goat.network/name/{id}";
+    const metadataUri = "https://metadata.goat.network/name/";
 
     assert.equal(
       await fixture.staticMetadataService.read.uri([tokenId]),
-      "https://gns-meta.goat.network/name/0x{id}",
+      "https://gns-meta.goat.network/wrapper/1",
     );
 
     await fixture.staticMetadataService.write.setURI([metadataUri]);
 
     assert.equal(
       await fixture.staticMetadataService.read.uri([tokenId]),
-      metadataUri,
+      `${metadataUri}${tokenId}`,
     );
     assert.equal(
       await fixture.goatNameWrapper.read.uri([tokenId]),
-      metadataUri,
+      `${metadataUri}${tokenId}`,
     );
     await assert.rejects(
       fixture.userStaticMetadataService.write.setURI([
@@ -504,6 +504,9 @@ describe(".goat GNS", async function () {
       ]),
       /Ownable: caller is not the owner/,
     );
+
+    await fixture.staticMetadataService.write.setURI([""]);
+    assert.equal(await fixture.staticMetadataService.read.uri([tokenId]), "");
   });
 
   it("allows the owner to configure ERC721 token metadata URI", async function () {
