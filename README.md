@@ -110,7 +110,7 @@ Then deploy with:
 ```sh
 npx hardhat ignition deploy ignition/modules/GNS.ts --network testnet3 --parameters ignition/GNSModule.config.json
 ```
- 
+
 If the final administrator is a different cold wallet or multisig, deploy `GNSWithOwner.ts` instead:
 
 ```json
