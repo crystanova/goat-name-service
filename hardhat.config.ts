@@ -83,4 +83,15 @@ export default defineConfig({
       },
     },
   },
+  verify: {
+    etherscan: {
+      enabled: false,
+    },
+    blockscout: {
+      enabled: true,
+    },
+    sourcify: {
+      enabled: false,
+    },
+  },
 });

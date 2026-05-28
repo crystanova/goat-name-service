@@ -41,7 +41,7 @@ type WalletClientWithAccount = Awaited<
 };
 
 async function connectTask(hre: HardhatRuntimeEnvironment) {
-  const { networkName, viem } = await hre.network.connect();
+  const { networkName, viem } = await hre.network.getOrCreate();
   const publicClient = await viem.getPublicClient();
   const [walletClient] = await viem.getWalletClients();
 

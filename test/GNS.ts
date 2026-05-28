@@ -58,7 +58,11 @@ const RECEIVE_WITH_AUTHORIZATION_TYPES = {
 } as const;
 
 describe(".goat GNS", async function () {
-  const { ignition, networkHelpers, viem: hhViem } = await network.connect();
+  const {
+    ignition,
+    networkHelpers,
+    viem: hhViem,
+  } = await network.getOrCreate();
   const sharedPublicClient = await hhViem.getPublicClient();
 
   type MakeCommitmentArgs = Parameters<
