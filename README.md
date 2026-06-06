@@ -151,10 +151,10 @@ After deployment, the price book owner — the deployer for `GNS.ts`, or `owner`
 
 ```solidity
 function setTokenConfig(
-    address token,
-    uint256 price3,     // annual price for 3-character labels
-    uint256 price4,     // annual price for 4-character labels
-    uint256 price5Plus  // annual price for 5+-character labels
+  address token,
+  uint256 price3, // annual price for 3-character labels
+  uint256 price4, // annual price for 4-character labels
+  uint256 price5Plus // annual price for 5+-character labels
 ) external onlyOwner;
 ```
 
