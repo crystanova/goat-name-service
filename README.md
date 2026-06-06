@@ -56,6 +56,8 @@ The Ignition module deploys and initializes the full `.goat` stack in one flow:
 5. Transfer `.goat` ownership to the base registrar
 6. Authorize the controller on the registrar, wrapper, and reverse registrar
 
+The module does **not** whitelist any payment tokens. `GNSPriceBook` ships with an empty whitelist, so configuring token prices is a required manual step after every deployment — see [Post-Deployment: Whitelist Payment Tokens](#post-deployment-whitelist-payment-tokens).
+
 Before deploying to GOAT Testnet3 or GOAT Mainnet, configure the Hardhat keystore entries used by `hardhat.config.ts`:
 
 ```sh
@@ -140,6 +142,36 @@ npx hardhat --build-profile production ignition deploy ignition/modules/GNSWithO
 ```
 
 `GNSWithOwner.ts` reuses the base deployment and then transfers final administrative ownership of the ENS root node, `reverse` node, registrar, reverse registrar, wrapper, price book, registrar controller, and x402 adaptor. The deployer still sends all Ignition transactions. Use `GNS.ts` instead when `owner` is omitted or equals the deployer, otherwise the owner handoff would be redundant. Set `treasury` explicitly when registration fees should go to the same cold wallet or multisig. `owner` must be non-zero because the final handoff uses OpenZeppelin `transferOwnership`.
+
+### Post-Deployment: Whitelist Payment Tokens
+
+The Ignition module deploys `GNSPriceBook` with an **empty token whitelist**. Token pricing is **not** part of the automated flow, so until the price book owner whitelists at least one ERC20, every `rentPrice`, `register*`, and `renew*` call reverts with `UnsupportedPaymentToken(token)` (`quote()` only returns for an enabled config). This step is easy to forget on a fresh deployment or an address swap, and produces an opaque revert (`0x23808a32`) for any consumer whose ABI lacks the price book errors.
+
+After deployment, the price book owner — the deployer for `GNS.ts`, or `owner` for `GNSWithOwner.ts` — must call `setTokenConfig` once per accepted token:
+
+```solidity
+function setTokenConfig(
+  address token,
+  uint256 price3, // annual price for 3-character labels
+  uint256 price4, // annual price for 4-character labels
+  uint256 price5Plus // annual price for 5+-character labels
+) external onlyOwner;
+```
+
+Prices are the **annual** cost denominated in the token's own smallest unit; `quote()` prorates by registration duration. Match each value to the token's `decimals` — a 6-decimal USDC price of 100/year is `100000000`, whereas an 18-decimal token would use `100000000000000000000`.
+
+Example — whitelist a 6-decimal USDC at 100 / 30 / 3 per year (the values currently used on mainnet):
+
+```sh
+cast send <GNSPriceBook> \
+  "setTokenConfig(address,uint256,uint256,uint256)" \
+  <USDC> 100000000 30000000 3000000 \
+  --rpc-url <RPC_URL> --private-key <OWNER_KEY>
+```
+
+The owner key must match `GNSPriceBook.owner()`. Any owner-controlled wallet or script works; `npx hardhat console --network <net>` with a viem wallet client is the in-repo alternative to `cast`. Repeat for every payment token (e.g. USDT). Verify with `isSupported(token)` and `tokenConfig(token)`, and use `disableToken(token)` to remove one later.
+
+The whitelisted set must exactly match the `paymentTokens` configured in the frontend and backend (see the integration guide below). Commitment hashes and `register()` calls all key on the GOAT-side token address, so a token enabled here but absent from the app config — or vice versa — will fail at quote or registration time.
 
 ## Contract Roles
 
